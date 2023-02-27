@@ -37,6 +37,7 @@ public abstract class Screen {
         System.out.println("3. 좌석 예약 하기");
         System.out.println("4. 좌석 변경 하기");
         System.out.println("5. 좌석 결제 하기");
+        System.out.println("6. 티켓 출력 하기");
         System.out.println("7. 메인 메뉴 이동");
     }
     public void showSeatMap(){
@@ -70,17 +71,26 @@ public abstract class Screen {
             System.out.println("[ 좌석 예약 ]");
             System.out.print("좌석 행 번호 입력(1-"+this.rowMax+") :");
             row = scan.nextInt();
+            if(row>rowMax || row<1){
+                System.out.println("존재하지않는 행입니다.");
+                continue;
+            }
             System.out.print("좌석 열 번호 입력(1-"+this.colMax+") :");
             col = scan.nextInt();
-            if(row>this.rowMax || col>this.colMax || row<1 || col<1){
-                System.out.println("범위를 확인해주세요.");
-            }else{
-                seatArray[row-1][col-1].setSeat(row,col);
-                seatArray[row-1][col-1].setReservedId(currentReservedId+(int)(Math.random()*(colMax*rowMax)+1));
-                System.out.println("행["+row+"] 열["+col+"] "+seatArray[row-1][col-1].getReservedId()+"예약 번호로 예약되었습니다.");
-                seatArray[row-1][col-1].setStatus(MovieTicket.SEAT_RESERVED_MARK);
-                break;
+            if(col>colMax || col<1){
+                System.out.println("존재하지않는 열입니다.");
+                continue;
             }
+            if(seatArray[row-1][col-1].getReservedId() != 0){
+                System.out.println("이미 (예약/구매)된 좌석입니다.");
+                System.out.println("다시 입력해주세요.");
+                continue;
+            }
+            seatArray[row-1][col-1].setSeat(row,col);
+            seatArray[row-1][col-1].setReservedId(currentReservedId+(int)(Math.random()*(colMax*rowMax)+1));
+            System.out.println("행["+row+"] 열["+col+"] "+seatArray[row-1][col-1].getReservedId()+"예약 번호로 예약되었습니다.");
+            seatArray[row-1][col-1].setStatus(MovieTicket.SEAT_RESERVED_MARK);
+            break;
         }
     }
     private MovieTicket checkReservedId(int id){
@@ -111,21 +121,27 @@ public abstract class Screen {
             tmp.setStatus(MovieTicket.SEAT_EMPTY_MARK);
             System.out.print("좌석 행 번호 입력(1-"+this.rowMax+") :");
             row = scan.nextInt();
+            if(row>rowMax || row<1){
+                System.out.println("존재하지않는 행입니다.");
+                continue;
+            }
             System.out.print("좌석 열 번호 입력(1-"+this.colMax+") :");
             col = scan.nextInt();
-            if(row>this.rowMax || col>this.colMax || row<1 || col<1){
-                System.out.println("범위를 확인해주세요.");
-            }else{
+            if(col>colMax || col<1){
+                System.out.println("존재하지않는 열입니다.");
+                continue;
+            }
                 seatArray[row-1][col-1].setSeat(row,col);
                 seatArray[row-1][col-1].setStatus(MovieTicket.SEAT_RESERVED_MARK);
                 System.out.println("예약번호"+num+"행["+row+"] 열["+col+"] 좌석으로 변경되었습니다.");
                 break;
-            }
-            break;
         }
     }
 
-    private HashMap<Integer, Receipt> receiptMap = new HashMap<Integer, Receipt>();
+    private final HashMap<Integer, Receipt> receiptMap = new HashMap<Integer, Receipt>();
+    public HashMap<Integer, Receipt> getMap(){
+        return this.receiptMap;
+    }
     public void payment(){
         while(true){
             Scanner scan = new Scanner(System.in);
@@ -213,5 +229,22 @@ public abstract class Screen {
         }
     }
 
-
+    public void printTicket(){
+        while(true){
+            Scanner scan = new Scanner(System.in);
+            System.out.println("[ 좌석 티켓 출력 ]");
+            System.out.print("예약 번호 입력 :");
+            int num = scan.nextInt();
+            if(checkReservedId(num) != null){
+                Receipt r = receiptMap.get(num);
+                System.out.println("--------------------");
+                System.out.println("-      Receipt     -");
+                System.out.println("--------------------");
+                System.out.println(r.toString());
+            }else{
+                System.out.println("예약 번호를 확인해주세요.");
+                return;
+            }
+        }
+    }
 }

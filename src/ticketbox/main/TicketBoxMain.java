@@ -42,6 +42,9 @@ public class TicketBoxMain {
                     case 5:
                         screen.payment();
                         break;
+                    case 6:
+                        screen.printTicket();
+                        break;
                     case 7:
                         mainMenu = true;
                         break;

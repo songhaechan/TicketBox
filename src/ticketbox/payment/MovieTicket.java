@@ -21,7 +21,7 @@ public class MovieTicket {
         this.status = status;
     }
 
-    private int reservedId;
+    private int reservedId=0;
     public void setSeat(int row, int col){
         this.row = row;
         this.col = col;
